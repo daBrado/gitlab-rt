@@ -1,0 +1,4 @@
+RTURI = 'https://rt.example.org/'
+RTCERT = './rt.example.org.crt'
+RTUSER = 'git'
+RTPASS = 'password'

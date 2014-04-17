@@ -1,0 +1,5 @@
+bin/
+.bundle/
+vendor/
+config.rb
+*.crt
