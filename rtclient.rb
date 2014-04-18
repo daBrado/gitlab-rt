@@ -6,15 +6,15 @@ class RTResponse
   KEY_VALUE_SEP = /(: |$)/
   COMMENT = /^#/
   LIST_SEP = /\s*,\s*/
-  attr_reader :raw, :version, :code, :status, :body
+  attr_reader :raw, :version, :code, :status, :comments, :body
   def initialize(body)
     @raw = body
     lines = body.split LINE_SEP
     lines = [*lines[0..0], *lines.drop(1).each_slice(2).map(&:join)]
     @version, @code, @status = lines.first.split(' ', 3)
-    @body = lines.drop(1).reject{|line|
-      COMMENT.match(line)
-    }.slice_before(ARRAY_SEP).map{|item|
+    lines.shift
+    @comments, lines = lines.partition{|line|COMMENT.match(line)}
+    @body = lines.slice_before(ARRAY_SEP).map{|item|
       item.reject{|line|
         ARRAY_SEP.match line
       }.map{|line|
