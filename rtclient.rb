@@ -27,6 +27,7 @@ class RTResponse
   end
   def self.split_string(string); string.split LIST_SEP; end
   def self.join_array(array); array.join(', '); end
+  def ok?; @code=="200"; end
 end
 
 class String
@@ -59,5 +60,5 @@ class RTClient
     @cookie = response['set-cookie'].partition(';').first
     RTResponse.new response.body
   end
-  def login(user, pass); call(user:user, pass:pass).code == "200"; end
+  def login(user, pass); call(user:user, pass:pass).ok?; end
 end
