@@ -28,6 +28,7 @@ class RTResponse
   def self.split_string(string); string.split LIST_SEP; end
   def self.join_array(array); array.join(', '); end
   def ok?; @code=="200"; end
+  def no_credentials?; @code=="401"; end
 end
 
 class String
