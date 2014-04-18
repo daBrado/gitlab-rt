@@ -52,6 +52,6 @@ if rturi.is_a? URI::HTTPS
   http.verify_mode = OpenSSL::SSL::VERIFY_PEER
   http.ca_file = RTCERT if RTCERT
 end
-rt = RTClient.new http:http, path:rturi.path
-rt.login RTUSER, RTPASS
+rt = RTClient.new http:http, path:rturi.path, user:RTUSER, pass:RTPASS
+if !rt.login; STDERR.puts "login failure"; exit 1; end
 run GitLabRT.new rt

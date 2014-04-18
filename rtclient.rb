@@ -40,13 +40,16 @@ end
 
 class RTClient
   class ConnectionError < RuntimeError; end
+  class AuthenticationError < RuntimeError; end
   attr_accessor :cookie, :http
-  def initialize(http:nil, path:nil, cookie:nil)
+  def initialize(http:nil, path:nil, user:nil, pass:nil)
     @http = http
     @path = path
-    @cookie = cookie
+    @user = user
+    @pass = pass
+    @cookie = nil
   end
-  def call(*path, format:nil, fields:nil, content:nil, user:nil, pass:nil)
+  def call(*path, format:nil, fields:nil, content:nil, user:nil, pass:nil, noauth:false)
     data = {}
     data.merge! format:format if format
     data.merge! fields:fields if fields
@@ -57,9 +60,14 @@ class RTClient
     end
     headers = @cookie ? {'Cookie'=>@cookie} : {}
     response = @http.post "#{@path}/REST/1.0/#{path.join('/')}", URI.encode_www_form(data), headers
-    raise ConnectionError if response.code != "200"
+    raise ConnectionError.new if response.code != "200"
     @cookie = response['set-cookie'].partition(';').first
-    RTResponse.new response.body
+    rtresponse = RTResponse.new response.body
+    if rtresponse.no_credentials?
+      raise AuthenticationError.new if noauth || !login
+      rtresponse = call(*path, format:format, fields:fields, content:content, noauth:true)
+    end
+    rtresponse
   end
-  def login(user, pass); call(user:user, pass:pass).ok?; end
+  def login; call(user:@user, pass:@pass).ok?; end
 end
