@@ -65,7 +65,7 @@ class RTClient
     @cookie = response['set-cookie'].partition(';').first
     rtresponse = RTResponse.new response.body
     if rtresponse.no_credentials?
-      raise AuthenticationError.new if noauth || !login
+      raise AuthenticationError.new if noauth || (user&&pass) || !login
       rtresponse = call(*path, format:format, fields:fields, content:content, noauth:true)
     end
     raise Error.new(rtresponse.raw) if !rtresponse.ok?
