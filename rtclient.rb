@@ -39,8 +39,9 @@ class Array
 end
 
 class RTClient
-  class ConnectionError < RuntimeError; end
-  class AuthenticationError < RuntimeError; end
+  class Error < RuntimeError; end
+  class ConnectionError < Error; end
+  class AuthenticationError < Error; end
   attr_accessor :cookie, :http
   def initialize(http:nil, path:nil, user:nil, pass:nil)
     @http = http
@@ -67,6 +68,7 @@ class RTClient
       raise AuthenticationError.new if noauth || !login
       rtresponse = call(*path, format:format, fields:fields, content:content, noauth:true)
     end
+    raise Error.new(rtresponse.raw) if !rtresponse.ok?
     rtresponse
   end
   def login; call(user:@user, pass:@pass).ok?; end
