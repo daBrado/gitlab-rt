@@ -42,7 +42,6 @@ class RTClient
   class Error < RuntimeError; end
   class ConnectionError < Error; end
   class AuthenticationError < Error; end
-  attr_accessor :cookie, :http
   def initialize(http:nil, path:nil, user:nil, pass:nil)
     @http = http
     @path = path
