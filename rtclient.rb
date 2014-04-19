@@ -1,4 +1,5 @@
 require 'net/http'
+require 'openssl'
 
 class RTResponse
   LINE_SEP = /\n+([^ ]|$)/
@@ -42,6 +43,16 @@ class RTClient
   class Error < RuntimeError; end
   class ConnectionError < Error; end
   class AuthenticationError < Error; end
+  def self.make_http_and_path(uri_string, ca_file=nil)
+    uri = URI.parse uri_string
+    http = Net::HTTP.new uri.host, uri.port
+    if uri.is_a? URI::HTTPS
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      http.ca_file = ca_file if ca_file
+    end
+    [http, uri.path]
+  end
   def initialize(http:nil, path:nil, user:nil, pass:nil)
     @http = http
     @path = path

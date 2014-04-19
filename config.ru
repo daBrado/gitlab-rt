@@ -4,7 +4,6 @@ require 'rubygems'
 require 'bundler/setup'
 require 'json'
 require 'logger'
-require 'openssl'
 require_relative 'rtclient'
 require_relative 'config'
 
@@ -45,13 +44,7 @@ class GitLabRT
   end
 end
 
-rturi = URI.parse RTURI
-http = Net::HTTP.new rturi.host, rturi.port
-if rturi.is_a? URI::HTTPS
-  http.use_ssl = true
-  http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-  http.ca_file = RTCERT if RTCERT
-end
-rt = RTClient.new http:http, path:rturi.path, user:RTUSER, pass:RTPASS
+http, path = RTClient.make_http_and_path RTURI, RTCERT
+rt = RTClient.new http:http, path:path, user:RTUSER, pass:RTPASS
 if !rt.login; STDERR.puts "login failure"; exit 1; end
 run GitLabRT.new rt
