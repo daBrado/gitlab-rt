@@ -48,7 +48,7 @@ class RTClient
     http = Net::HTTP.new uri.host, uri.port
     if uri.is_a? URI::HTTPS
       http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      http.verify_mode = (ca_file==false) ? OpenSSL::SSL::VERIFY_NONE : OpenSSL::SSL::VERIFY_PEER
       http.ca_file = ca_file if ca_file
     end
     [http, uri.path]
